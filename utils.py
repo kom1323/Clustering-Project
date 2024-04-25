@@ -1,12 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+from torch.utils.tensorboard import SummaryWriter
+
+
+writer = SummaryWriter()
 parameters = {
     'eps': 262 / 2352,
     'k': 65,
     'b': 0.8,
     'num_iterations': 30
 }
+
+
+
 
 # for reading sift dataset
 def fvecs_read(filename, c_contiguous=True):
