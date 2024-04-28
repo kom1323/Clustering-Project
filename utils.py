@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from torch.utils.tensorboard import SummaryWriter
+#from torch.utils.tensorboard import SummaryWriter
 
 
-writer = SummaryWriter()
+#writer = SummaryWriter()
 parameters = {
     'eps': 262 / 2352,
     'k': 65,
@@ -49,7 +49,8 @@ def find_accurate_parameters(sampled_data):
 
 
 def michals_algorithm(eps, k, b, results, sampled_data, centroids, sample_size):
-    results[(k, b, eps)] = False
+    
+    result = False
     for _ in range(parameters['num_iterations']):  # iterations
         reps = []
         for _ in range(k + 1):
@@ -71,11 +72,14 @@ def michals_algorithm(eps, k, b, results, sampled_data, centroids, sample_size):
                 break
         if len(reps) < k + 1:
             print((k, b, eps), True, reps)
-            results[(k, b, eps)] = True
+            result = True
             centroids[(k, b, eps)] = reps
             break
-    if not results[(k, b, eps)]:
+    if not result:
         print((k, b, eps), False)
+
+
+    return result, reps
 
 def draw_vectors(vectors: np.ndarray) -> None:
 
