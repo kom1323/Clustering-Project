@@ -14,20 +14,19 @@ from utils import display_clustering
 
 
 
-def run_k_means_algorithm(preprocessor, data, true_labels):
 
-    algorithm_type = "kmeans"
-    
+def run_michals_algorithm(preprocessor, data, true_labels):
+
+    algorithm_type = "michals"    
+
+    centroids = {}
+    results = {}
     clusterer = Pipeline(
         [
             (
-                algorithm_type,
-                KMeans(
-                    n_clusters=n_clusters,
-                    init="k-means++",
-                    n_init=10,
-                    max_iter=300,
-                    random_state=42,
+                "michal algorithm",
+                michals_algorithm(
+                   
                 ),
             ),
         ]
@@ -41,6 +40,8 @@ def run_k_means_algorithm(preprocessor, data, true_labels):
     )
 
     display_clustering(pipe, data, true_labels, algorithm_type)
+
+
 
 
 if __name__ == "__main__":
@@ -62,12 +63,4 @@ if __name__ == "__main__":
     ]
     )
 
-    run_k_means_algorithm(preprocessor, data, true_labels)
-
-
-
-
-   
-
-
-    
+    run_michals_algorithm(preprocessor, data, true_labels)

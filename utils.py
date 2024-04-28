@@ -1,10 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+
+import pandas as pd
+import seaborn as sns
+import numpy as np
+from scipy.spatial.distance import cdist
+import matplotlib.pyplot as plt
+
+
+
 #from torch.utils.tensorboard import SummaryWriter
-
-
 #writer = SummaryWriter()
+
+
 parameters = {
     'eps': 262 / 2352,
     'k': 65,
@@ -97,4 +106,67 @@ def draw_vectors(vectors: np.ndarray) -> None:
     plt.title('Scatter Plot')
 
     # Show the plot
+    plt.show()
+
+
+
+
+def display_clustering(pipe, data, true_labels, algorithm_type) -> None:
+
+    pipe.fit(data)
+
+    pcadf = pd.DataFrame(
+    pipe["preprocessor"].transform(data),
+    columns=["component_1", "component_2"],
+    )
+
+    pcadf["predicted_cluster"] = pipe["clusterer"][algorithm_type].labels_
+    pcadf["true_label"] = true_labels
+
+    plt.style.use("fivethirtyeight")
+    plt.figure(figsize=(12, 8))
+
+    scat = sns.scatterplot(
+        x="component_1",
+        y="component_2",
+        s=50,
+        data=pcadf,
+        hue="predicted_cluster",
+        style="true_label",
+        palette="Set2",
+    )
+
+    scat.set_title(
+        f"Clustering test {algorithm_type}"
+    )
+
+    # Extract unique colors used in the scatter plot
+    colors = list(set(tuple(color) for color in scat.get_children()[0].get_facecolors()))
+    print(len(colors))
+        
+
+    # Find a point in the same cluster as the cluster center and use its color for the circle
+    for cluster_label, cluster_center in enumerate(pipe["clusterer"][algorithm_type].cluster_centers_):
+        
+        # Find any point in the same cluster and take it's color
+        cluster_point_index = np.where(pipe["clusterer"][algorithm_type].labels_ == cluster_label)[0][0]
+        cluster_point_color = scat.get_children()[0].get_facecolors()[cluster_point_index]
+            
+        #Now we find the radius of the circle
+        #Find points in the same cluster
+        cluster_points = pcadf[pcadf['predicted_cluster'] == cluster_label][['component_1', 'component_2']].values
+        
+        # Calculate distances from cluster center to all points in the cluster
+        distances = cdist([cluster_center], cluster_points, 'euclidean')[0]
+        
+        # Find maximum distance
+        max_distance = np.max(distances)
+
+        # Plot circle around the cluster center with the same color as the cluster point
+        circle = plt.Circle(cluster_center, radius=max_distance, edgecolor=cluster_point_color, facecolor='None')
+        plt.gca().add_patch(circle)
+
+
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
+    plt.tight_layout()
     plt.show()
