@@ -17,35 +17,39 @@ from utils import display_clustering
 def run_k_means_algorithm(preprocessor, data, true_labels):
 
     algorithm_type = "kmeans"
-    
-    clusterer = Pipeline(
-        [
-            (
-                algorithm_type,
-                KMeans(
-                    n_clusters=n_clusters,
-                    init="k-means++",
-                    n_init=10,
-                    max_iter=300,
-                    random_state=42,
+    iterations = 10
+    centroids = None
+
+    for i in range(iterations):
+
+        clusterer = Pipeline(
+            [
+                (
+                    algorithm_type,
+                    KMeans(
+                        n_clusters=n_clusters,
+                        init=(centroids if centroids is not None else 'k-means++'),
+                        n_init=1,
+                        max_iter=1,
+                        random_state=42,
+                    ),
                 ),
-            ),
-        ]
-    )
+            ]
+        )
 
-    pipe = Pipeline(
-        [
-            ("preprocessor", preprocessor),
-            ("clusterer", clusterer)
-        ]
-    )
+        pipe = Pipeline(
+            [
+                ("preprocessor", preprocessor),
+                ("clusterer", clusterer)
+            ]
+        )
 
-    display_clustering(pipe, data, true_labels, algorithm_type)
+        centroids = display_clustering(pipe, data, true_labels, algorithm_type, iteration=i)
 
 
 if __name__ == "__main__":
 
-    n_clusters = 3
+    n_clusters = 5
 
     data, true_labels = make_blobs(
         n_samples=200,

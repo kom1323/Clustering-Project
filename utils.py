@@ -7,12 +7,11 @@ import seaborn as sns
 import numpy as np
 from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt
+import torchvision
+import io
 
-
-
-#from torch.utils.tensorboard import SummaryWriter
-#writer = SummaryWriter()
-
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter('logs')
 
 parameters = {
     'eps': 262 / 2352,
@@ -111,7 +110,7 @@ def draw_vectors(vectors: np.ndarray) -> None:
 
 
 
-def display_clustering(pipe, data, true_labels, algorithm_type) -> None:
+def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
 
     pipe.fit(data)
 
@@ -169,4 +168,12 @@ def display_clustering(pipe, data, true_labels, algorithm_type) -> None:
 
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
     plt.tight_layout()
-    plt.show()
+    #plt.show()
+
+    # Write the plot to TensorBoard
+    writer.add_figure('Fig1', plt.gcf(), global_step=iteration)
+
+    # Close the plot to release memory
+    plt.close()
+
+    return pipe["clusterer"][algorithm_type].cluster_centers_
