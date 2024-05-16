@@ -1,33 +1,27 @@
-import pandas as pd
-import seaborn as sns
-import numpy as np
 from utils import michals_algorithm
-from scipy.spatial.distance import cdist
-import matplotlib.pyplot as plt
 from sklearn.datasets import make_blobs
-from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_score, adjusted_rand_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from utils import display_clustering
-
-
-
+from utils import parameters
+import math
 
 def run_michals_algorithm(preprocessor, data, true_labels):
 
-    algorithm_type = "michals"    
+    algorithm_type = "michals algorithm"    
 
-    centroids = {}
-    results = {}
+    
     clusterer = Pipeline(
         [
             (
-                "michal algorithm",
-                michals_algorithm(
-                   
-                ),
+                algorithm_type,
+                michals_algorithm(k=parameters["k"],
+                                  b=parameters["b"],
+                                  eps=parameters["eps"],
+                                  sample_size=int(math.log(3 * parameters['k']) / parameters['eps'] + 1),
+                                  sampled_data=data
+                                  ),
             ),
         ]
     )
@@ -39,14 +33,14 @@ def run_michals_algorithm(preprocessor, data, true_labels):
         ]
     )
 
-    display_clustering(pipe, data, true_labels, algorithm_type)
+    display_clustering(pipe, data, true_labels, algorithm_type, iteration=1)
 
 
 
 
 if __name__ == "__main__":
 
-    n_clusters = 3
+    n_clusters = 5
 
     data, true_labels = make_blobs(
         n_samples=200,
@@ -54,7 +48,7 @@ if __name__ == "__main__":
         cluster_std=1,
         random_state=42
     )
-
+    
 
     preprocessor = Pipeline(
     [

@@ -1,13 +1,7 @@
-import pandas as pd
-import seaborn as sns
-import numpy as np
 from utils import michals_algorithm
-from scipy.spatial.distance import cdist
-import matplotlib.pyplot as plt
 from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_score, adjusted_rand_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from utils import display_clustering

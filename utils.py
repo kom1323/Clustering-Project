@@ -7,16 +7,16 @@ import seaborn as sns
 import numpy as np
 from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt
-import torchvision
-import io
+from michal_algo_obj import MichalAlgorithmObject
 
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter('logs')
 
+
 parameters = {
     'eps': 262 / 2352,
-    'k': 65,
-    'b': 0.8,
+    'k': 5,
+    'b': 0.5,
     'num_iterations': 30
 }
 
@@ -56,24 +56,36 @@ def find_accurate_parameters(sampled_data):
                 
 
 
-def michals_algorithm(eps, k, b, results, sampled_data, centroids, sample_size):
+def michals_algorithm(eps, k, b, sampled_data, sample_size):
     
     result = False
     for _ in range(parameters['num_iterations']):  # iterations
         reps = []
+        radii = []
         for _ in range(k + 1):
+            
             random_subset_indices = np.random.choice(len(sampled_data), sample_size, replace=False)
             random_subset = sampled_data[random_subset_indices]
             random_subset_list = random_subset.tolist()
             found_any_new_representative = False
+
             for p_sample in random_subset_list:
+                
                 is_sample_new_representative = True
+                max_point_to_rep_distance = 0
+                
                 for rep in reps:
-                    if dist(p_sample, rep) <= b:
+                
+                    distance_point_to_rep = dist(p_sample, rep)
+                    if distance_point_to_rep > max_point_to_rep_distance:
+                        max_point_to_rep_distance = distance_point_to_rep
+                
+                    if distance_point_to_rep <= b:
                         is_sample_new_representative = False
                         break
                 if is_sample_new_representative:
                     reps.append(p_sample)
+                    radii.append(max_point_to_rep_distance)
                     found_any_new_representative = True
                     break
             if not found_any_new_representative:
@@ -81,13 +93,17 @@ def michals_algorithm(eps, k, b, results, sampled_data, centroids, sample_size):
         if len(reps) < k + 1:
             print((k, b, eps), True, reps)
             result = True
-            centroids[(k, b, eps)] = reps
             break
     if not result:
         print((k, b, eps), False)
 
 
-    return result, reps
+    return MichalAlgorithmObject(result=result,  
+                                 reps=reps,
+                                 radii=radii,
+                                 b=b,
+                                 eps=eps,
+                                 num_clusters=k)
 
 def draw_vectors(vectors: np.ndarray) -> None:
 
@@ -110,6 +126,9 @@ def draw_vectors(vectors: np.ndarray) -> None:
 
 
 
+
+
+
 def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
 
     pipe.fit(data)
@@ -119,7 +138,10 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
     columns=["component_1", "component_2"],
     )
 
-    pcadf["predicted_cluster"] = pipe["clusterer"][algorithm_type].labels_
+    algorithm_labels = pipe["clusterer"][algorithm_type].labels_
+    algorithm_cluster_centers = pipe["clusterer"][algorithm_type].cluster_centers_
+
+    pcadf["predicted_cluster"] = algorithm_labels
     pcadf["true_label"] = true_labels
 
     plt.style.use("fivethirtyeight")
@@ -145,10 +167,10 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
         
 
     # Find a point in the same cluster as the cluster center and use its color for the circle
-    for cluster_label, cluster_center in enumerate(pipe["clusterer"][algorithm_type].cluster_centers_):
+    for cluster_label, cluster_center in enumerate(algorithm_cluster_centers):
         
         # Find any point in the same cluster and take it's color
-        cluster_point_index = np.where(pipe["clusterer"][algorithm_type].labels_ == cluster_label)[0][0]
+        cluster_point_index = np.where(algorithm_labels == cluster_label)[0][0]
         cluster_point_color = scat.get_children()[0].get_facecolors()[cluster_point_index]
             
         #Now we find the radius of the circle
@@ -176,4 +198,4 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
     # Close the plot to release memory
     plt.close()
 
-    return pipe["clusterer"][algorithm_type].cluster_centers_
+    return algorithm_cluster_centers
