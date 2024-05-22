@@ -1,4 +1,3 @@
-from utils import michals_algorithm
 from sklearn.datasets import make_blobs
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
@@ -6,34 +5,42 @@ from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from utils import display_clustering
 from utils import parameters
 import math
+from michal_algo_obj import MichalAlgorithm
+import numpy as np
 
 def run_michals_algorithm(preprocessor, data, true_labels):
 
     algorithm_type = "michals algorithm"    
 
-    
-    clusterer = Pipeline(
-        [
-            (
-                algorithm_type,
-                michals_algorithm(k=parameters["k"],
-                                  b=parameters["b"],
-                                  eps=parameters["eps"],
-                                  sample_size=int(math.log(3 * parameters['k']) / parameters['eps'] + 1),
-                                  sampled_data=data
-                                  ),
-            ),
-        ]
-    )
+    #for k in range(parameters['k'] - 10, parameters['k'] - 6, 1):
+    k = parameters['k']
+    iteration = 1
+    for b in np.arange(parameters['b'], parameters['b'] + 0.5, 0.05):
+        for eps in np.arange(parameters['eps'] - 0.1, parameters['eps'] + 0.1, 0.05):
+            iteration += 1
+            clusterer = Pipeline(
+                [
+                    (
+                        algorithm_type,
+                        MichalAlgorithm(k=k,
+                                        b=b,
+                                        eps=eps,
+                                        max_iter=30
+                                        ),
+                    ),
+                ]
+            )
 
-    pipe = Pipeline(
-        [
-            ("preprocessor", preprocessor),
-            ("clusterer", clusterer)
-        ]
-    )
+            pipe = Pipeline(
+                [
+                    ("preprocessor", preprocessor),
+                    ("clusterer", clusterer)
+                ]
+            )
 
-    display_clustering(pipe, data, true_labels, algorithm_type, iteration=1)
+
+
+            display_clustering(pipe, data, true_labels, algorithm_type, iteration=iteration)
 
 
 

@@ -7,16 +7,15 @@ import seaborn as sns
 import numpy as np
 from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt
-from michal_algo_obj import MichalAlgorithmObject
 
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter('logs')
 
 
 parameters = {
-    'eps': 262 / 2352,
+    'eps': 500 / 2352,
     'k': 5,
-    'b': 0.5,
+    'b': 0.05,
     'num_iterations': 30
 }
 
@@ -39,10 +38,6 @@ def fvecs_read(filename, c_contiguous=True):
     return fv
 
 
-def dist(p1, p2):
-    return np.linalg.norm(np.array(p1) - np.array(p2))
-
-
 
 def find_accurate_parameters(sampled_data):
     sample_size = int(math.log(3 * parameters['k']) / parameters['eps'] + 1)
@@ -52,11 +47,13 @@ def find_accurate_parameters(sampled_data):
     for k in range(parameters['k'] - 10, parameters['k'] - 6, 1):
         for b in np.arange(parameters['b'] - 0.1, parameters['b'] + 0.1, 0.05):
             for eps in np.arange(parameters['eps'] - 0.1, parameters['eps'] + 0.1, 0.05):
-                michals_algorithm(eps, k, b, results, sampled_data, centroids, sample_size)
+                michals_algorithm_example(eps, k, b, results, sampled_data, centroids, sample_size)
                 
+def dist(p1, p2):
+    return np.linalg.norm(np.array(p1) - np.array(p2))
 
 
-def michals_algorithm(eps, k, b, sampled_data, sample_size):
+def michals_algorithm_example(eps, k, b, sampled_data, sample_size):
     
     result = False
     for _ in range(parameters['num_iterations']):  # iterations
@@ -91,19 +88,13 @@ def michals_algorithm(eps, k, b, sampled_data, sample_size):
             if not found_any_new_representative:
                 break
         if len(reps) < k + 1:
-            print((k, b, eps), True, reps)
+            print((k, b, eps), True)
             result = True
             break
     if not result:
         print((k, b, eps), False)
 
 
-    return MichalAlgorithmObject(result=result,  
-                                 reps=reps,
-                                 radii=radii,
-                                 b=b,
-                                 eps=eps,
-                                 num_clusters=k)
 
 def draw_vectors(vectors: np.ndarray) -> None:
 
@@ -131,7 +122,13 @@ def draw_vectors(vectors: np.ndarray) -> None:
 
 def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
 
+    
     pipe.fit(data)
+
+    if algorithm_type == "michals algorithm":
+        if pipe["clusterer"][algorithm_type].result == False:
+            return
+
 
     pcadf = pd.DataFrame(
     pipe["preprocessor"].transform(data),
@@ -140,6 +137,9 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
 
     algorithm_labels = pipe["clusterer"][algorithm_type].labels_
     algorithm_cluster_centers = pipe["clusterer"][algorithm_type].cluster_centers_
+
+
+    print("algo labels = ", algorithm_labels)
 
     pcadf["predicted_cluster"] = algorithm_labels
     pcadf["true_label"] = true_labels
