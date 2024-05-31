@@ -100,15 +100,15 @@ class MichalAlgorithm:
                     
                     for rep in reps:
                         distance_point_to_rep = self.dist(p_sample, rep)
-                        if distance_point_to_rep > max_point_to_rep_distance:
-                            max_point_to_rep_distance = distance_point_to_rep
+                        # if distance_point_to_rep > max_point_to_rep_distance:
+                        #     max_point_to_rep_distance = distance_point_to_rep
                     
                         if distance_point_to_rep <= self._b:
                             is_sample_new_representative = False
                             break
                     if is_sample_new_representative:
                         reps.append(p_sample)
-                        radii.append(max_point_to_rep_distance)
+                        radii.append(self._b)
                         found_any_new_representative = True
                         break
                 if not found_any_new_representative:

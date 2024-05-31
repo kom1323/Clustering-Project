@@ -117,9 +117,6 @@ def draw_vectors(vectors: np.ndarray) -> None:
 
 
 
-
-
-
 def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
 
     
@@ -138,8 +135,14 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
     algorithm_labels = pipe["clusterer"][algorithm_type].labels_
     algorithm_cluster_centers = pipe["clusterer"][algorithm_type].cluster_centers_
 
+    
 
     print("algo labels = ", algorithm_labels)
+
+    for index in range(len(algorithm_labels)):
+            if algorithm_labels[index] is None:
+                algorithm_labels[index] = "Unclustered"
+
 
     pcadf["predicted_cluster"] = algorithm_labels
     pcadf["true_label"] = true_labels
