@@ -122,7 +122,7 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
     
     pipe.fit(data)
 
-    if algorithm_type == "michals algorithm":
+    if algorithm_type == "New Algorithm":
         if pipe["clusterer"][algorithm_type].result == False:
             return
 
@@ -191,9 +191,22 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
         plt.gca().add_patch(circle)
 
 
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
+
+   
+    if algorithm_type == "New Algorithm":
+         #Add algorithm legend that display parameters
+        legend_labels = [f"$k$ = {pipe['clusterer'][algorithm_type].k}",
+                            f"$b$ = {pipe['clusterer'][algorithm_type].b:.2f}",
+                            f"$\\epsilon$ = {pipe['clusterer'][algorithm_type].eps:.2f}"]
+        handles, labels = scat.get_legend_handles_labels()
+        handles.extend([plt.Line2D([0], [0], label=label) for label in legend_labels])
+        labels.extend(legend_labels)
+        plt.legend(handles=handles, labels=labels, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
+    else:
+        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
     plt.tight_layout()
-    #plt.show()
+
+    
 
     # Write the plot to TensorBoard
     writer.add_figure('Fig1', plt.gcf(), global_step=iteration)

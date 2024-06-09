@@ -1,4 +1,3 @@
-from utils import michals_algorithm
 from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA

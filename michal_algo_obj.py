@@ -42,6 +42,10 @@ class MichalAlgorithm:
     @property
     def b(self):
         return self._b
+    
+    @property
+    def k(self):
+        return self._k
 
     @property
     def eps(self):

@@ -10,7 +10,7 @@ import numpy as np
 
 def run_michals_algorithm(preprocessor, data, true_labels):
 
-    algorithm_type = "michals algorithm"    
+    algorithm_type = "New Algorithm"    
 
     #for k in range(parameters['k'] - 10, parameters['k'] - 6, 1):
     k = parameters['k']
