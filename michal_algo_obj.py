@@ -112,7 +112,7 @@ class MichalAlgorithm:
                             break
                     if is_sample_new_representative:
                         reps.append(p_sample)
-                        radii.append(self._b)
+                        radii.append(self._b / 2)
                         found_any_new_representative = True
                         break
                 if not found_any_new_representative:

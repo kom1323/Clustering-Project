@@ -16,7 +16,7 @@ def run_michals_algorithm(preprocessor, data, true_labels):
     k = parameters['k']
     iteration = 1
     for b in np.arange(parameters['b'], parameters['b'] + 0.5, 0.05):
-        for eps in np.arange(parameters['eps'] - 0.1, parameters['eps'] + 0.1, 0.01):
+        for eps in np.arange(parameters['eps'], parameters['eps'] + 0.4, 0.05):
             iteration += 1
             clusterer = Pipeline(
                 [
