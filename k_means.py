@@ -2,12 +2,12 @@ from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 from utils import display_clustering
 
 
 
-def run_k_means_algorithm(preprocessor, data, true_labels):
+def run_k_means_algorithm(preprocessor, data, n_clusters,  true_labels=None):
 
     algorithm_type = "kmeans"
     iterations = 10
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     ]
     )
 
-    run_k_means_algorithm(preprocessor, data, true_labels)
+    run_k_means_algorithm(preprocessor, data, n_clusters, true_labels)
 
 
 
