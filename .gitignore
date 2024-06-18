@@ -3,6 +3,7 @@
 notes.txt
 logs
 __pycache__
+datasets/sift
 
 
 # Byte-compiled / optimized / DLL files
