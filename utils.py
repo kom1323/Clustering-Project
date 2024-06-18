@@ -14,7 +14,7 @@ writer = SummaryWriter('logs')
 
 parameters = {
     'eps': 100 / 1000,
-    'k': 5,
+    'k': 10,
     'b': 0.05,
     'num_iterations': 30
 }
@@ -67,12 +67,14 @@ def draw_vectors(vectors: np.ndarray) -> None:
 
 def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
 
-    
+    unclustered_counter = 0
+
     pipe.fit(data)
 
     if algorithm_type == "New Algorithm":
         if pipe["clusterer"][algorithm_type].result == False:
-            return
+            return None
+        
 
 
     pcadf = pd.DataFrame(
@@ -84,12 +86,14 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
     algorithm_cluster_centers = pipe["clusterer"][algorithm_type].cluster_centers_
 
     
+    
 
     print("algo labels = ", algorithm_labels)
 
     for index in range(len(algorithm_labels)):
             if algorithm_labels[index] is None:
                 algorithm_labels[index] = "Unclustered"
+                unclustered_counter += 1
 
 
     pcadf["predicted_cluster"] = algorithm_labels
@@ -100,15 +104,25 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
     plt.style.use("fivethirtyeight")
     plt.figure(figsize=(12, 8))
 
-    scat = sns.scatterplot(
-        x="component_1",
-        y="component_2",
-        s=50,
-        data=pcadf,
-        hue="predicted_cluster",
-        style="true_label",
-        palette="Set2",
-    )
+    if true_labels is not None:
+        scat = sns.scatterplot(
+            x="component_1",
+            y="component_2",
+            s=50,
+            data=pcadf,
+            hue="predicted_cluster",
+            style="true_label",
+            palette="Set2",
+        )
+    else:
+        scat = sns.scatterplot(
+            x="component_1",
+            y="component_2",
+            s=50,
+            data=pcadf,
+            hue="predicted_cluster",
+            palette="Set2",
+        )
 
     scat.set_title(
         f"Clustering test {algorithm_type}"
@@ -164,4 +178,4 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
     # Close the plot to release memory
     plt.close()
 
-    return algorithm_cluster_centers
+    return unclustered_counter

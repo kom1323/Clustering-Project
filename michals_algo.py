@@ -8,9 +8,11 @@ import math
 from michal_algo_obj import MichalAlgorithm
 import numpy as np
 
-def run_michals_algorithm(preprocessor, data, true_labels):
+def run_michals_algorithm(preprocessor, data, true_labels=None):
 
     algorithm_type = "New Algorithm"    
+
+    unclustered_list = []
 
     #for k in range(parameters['k'] - 10, parameters['k'] - 6, 1):
     k = parameters['k']
@@ -40,8 +42,10 @@ def run_michals_algorithm(preprocessor, data, true_labels):
 
 
 
-            display_clustering(pipe, data, true_labels, algorithm_type, iteration=iteration)
-
+            num_unclustered = display_clustering(pipe, data, true_labels, algorithm_type, iteration=iteration)
+            unclustered_list.append((iteration, num_unclustered))
+    
+    return unclustered_list
 
 
 

@@ -37,7 +37,7 @@ def run_k_means_algorithm(preprocessor, data, n_clusters,  true_labels=None):
             ]
         )
 
-        centroids = display_clustering(pipe, data, true_labels, algorithm_type, iteration=i)
+        display_clustering(pipe, data, true_labels, algorithm_type, iteration=i)
 
 
 if __name__ == "__main__":

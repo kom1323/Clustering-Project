@@ -1,5 +1,6 @@
 from utils import *
 from k_means import run_k_means_algorithm
+from michals_algo import run_michals_algorithm
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
@@ -21,4 +22,5 @@ if __name__ == '__main__':
 
     n_clusters = 10
 
-    run_k_means_algorithm(preprocessor, sub_dataset, n_clusters)
+    #run_k_means_algorithm(preprocessor, sub_dataset, n_clusters)
+    print(run_michals_algorithm(preprocessor, sub_dataset))
