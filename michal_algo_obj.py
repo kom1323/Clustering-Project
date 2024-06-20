@@ -105,11 +105,9 @@ class MichalAlgorithm:
                 if not found_any_new_representative:
                     break
             if len(reps) < self._k + 1:
-                print(f"(k = {self._k}, b = {self._b}, eps = {self._eps:.2f})", True)
                 result = True
                 break
         if not result:
-            print(f"(k = {self._k}, b = {self._b}, eps = {self._eps:.2f})", False)
             return
             
         self._result = result

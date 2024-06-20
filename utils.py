@@ -14,9 +14,9 @@ writer = SummaryWriter('logs')
 
 parameters = {
     'eps': 100 / 1000,
-    'k': 10,
+    'k': 100,
     'b': 0.05,
-    'num_iterations': 30
+    'num_iterations': 15
 }
 
 
@@ -122,9 +122,7 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
     )
 
     # Extract unique colors used in the scatter plot
-    colors = list(set(tuple(color) for color in scat.get_children()[0].get_facecolors()))
-    print(len(colors))
-        
+    colors = list(set(tuple(color) for color in scat.get_children()[0].get_facecolors()))        
 
     # Find a point in the same cluster as the cluster center and use its color for the circle
     for cluster_label, cluster_center in enumerate(algorithm_cluster_centers):
@@ -154,7 +152,7 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
         legend_labels = [f"$k$ = {pipe['clusterer'][algorithm_type].k}",
                             f"$b$ = {pipe['clusterer'][algorithm_type].b:.2f}",
                             f"$\\epsilon$ = {pipe['clusterer'][algorithm_type].eps:.2f}",
-                            f"$unclustered precentage$ = {percentage_unclustered}"]
+                            f"$unclustered percentage$ = {percentage_unclustered}%"]
         handles, labels = scat.get_legend_handles_labels()
         handles.extend([plt.Line2D([0], [0], label=label) for label in legend_labels])
         labels.extend(legend_labels)

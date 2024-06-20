@@ -9,7 +9,7 @@ from michal_algo_obj import MichalAlgorithm
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist
-
+from torch.utils.tensorboard import SummaryWriter
 
 def run_michals_algorithm_and_graph(preprocessor, data, true_labels=None):
 
@@ -30,7 +30,7 @@ def run_michals_algorithm_and_graph(preprocessor, data, true_labels=None):
                         MichalAlgorithm(k=k,
                                         b=b,
                                         eps=eps,
-                                        max_iter=30
+                                        max_iter=parameters['num_iterations']
                                         ),
                     ),
                 ]
@@ -55,8 +55,8 @@ def run_michals_algorithm_and_graph(preprocessor, data, true_labels=None):
 def find_parameters_general(preprocessor, data):
 
     iteration = 1
-    for k in range(parameters['k'] - 5, parameters['k'] + 5, 1):
-        for b in np.arange(parameters['b'], parameters['b'] + 0.5, 0.05):
+    for k in range(parameters['k'], parameters['k'] + 500, 50):
+        for b in np.arange(parameters['b'], parameters['b'] + 0.4, 0.05):
             for eps in np.arange(parameters['eps'], parameters['eps'] + 0.4, 0.05):
                 iteration += 1
                 run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration)
@@ -67,7 +67,7 @@ def run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration):
     algorithm_type = "New Algorithm"
    
     clusterer = Pipeline([
-        (algorithm_type, MichalAlgorithm(k=k, b=b, eps=eps, max_iter=30)),
+        (algorithm_type, MichalAlgorithm(k=k, b=b, eps=eps, max_iter=parameters['num_iterations'])),
     ])
 
     pipe = Pipeline([
@@ -79,9 +79,19 @@ def run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration):
     # Fit the pipeline to the data
     pipe.fit(data)
 
-    # Check if the algorithm result is False
-    if pipe["clusterer"][algorithm_type].result == False:
-        return None
+
+    writer = SummaryWriter(f'logs/iteration_{iteration}')
+
+    # Check if the algorithm result is True
+    if pipe["clusterer"][algorithm_type].result == True:
+        print(f"(k = {k}, b = {b:.2f}, eps = {eps:.2f})", True)
+        writer.add_text('Algorithm Result', f"(k = {k}, b = {b:.2f}, eps = {eps:.2f}) True", iteration)
+        writer.close()
+    else:
+        print(f"(k = {k}, b = {b:.2f}, eps = {eps:.2f})", False)
+        writer.add_text('Algorithm Result', f"(k = {k}, b = {b:.2f}, eps = {eps:.2f}) False", iteration)
+        writer.close()
+        return
 
     # Transform the data using the preprocessor
     transformed_data = pipe["preprocessor"].transform(data)
@@ -103,6 +113,9 @@ def run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration):
     percentage_unclustered = (num_unclustered / total_points) * 100
 
     print(f"Iteration #{iteration} Percentage of unclustered points: {percentage_unclustered:.2f}%")
+    writer.add_scalar('Percentage of Unclustered Points (%)', percentage_unclustered, iteration)
+    writer.close()
+
 
 
 
@@ -127,6 +140,6 @@ if __name__ == "__main__":
     ]
     )
 
-    run_michals_algorithm_and_graph(preprocessor, data, true_labels)
+    #run_michals_algorithm_and_graph(preprocessor, data, true_labels)
 
-    #find_parameters_general(preprocessor, data)
+    find_parameters_general(preprocessor, data)
