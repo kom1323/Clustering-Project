@@ -26,7 +26,6 @@ class MichalAlgorithm:
 
         self._result = False
         self._reps = None
-        self._radii = None
         self._labels = None
 
 
@@ -65,12 +64,12 @@ class MichalAlgorithm:
             labeled = False
             for i, centroid in enumerate(self._reps):
                 distance = np.linalg.norm(np.array(point) - np.array(centroid))
-                if distance <= self._radii[i]:
+                if distance <= self._b:
                     labels.append(i)
                     labeled = True
                     break
             if not labeled:
-                labels.append(None)
+                labels.append(-1)
 
         self._labels = np.array(labels)
     
@@ -88,7 +87,6 @@ class MichalAlgorithm:
         result = False
         for _ in range(self._max_iter):  # iterations
             reps = []
-            radii = []
             for _ in range(self._k + 1):
                 
                 random_subset_indices = np.random.choice(len(X), self._sample_size, replace=False)
@@ -105,7 +103,6 @@ class MichalAlgorithm:
                             break
                     if is_sample_new_representative:
                         reps.append(p_sample)
-                        radii.append(self._b)
                         found_any_new_representative = True
                         break
                 if not found_any_new_representative:
@@ -120,7 +117,6 @@ class MichalAlgorithm:
             
         self._result = result
         self._reps = reps
-        self._radii = radii
 
         self.find_labels(X)
         

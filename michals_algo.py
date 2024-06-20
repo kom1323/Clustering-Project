@@ -66,34 +66,22 @@ def run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration):
 
     algorithm_type = "New Algorithm"
    
-    clusterer = Pipeline(
-        [
-            (
-                algorithm_type,
-                MichalAlgorithm(k=k,
-                                b=b,
-                                eps=eps,
-                                max_iter=30
-                                ),
-            ),
-        ]
-    )
+    clusterer = Pipeline([
+        (algorithm_type, MichalAlgorithm(k=k, b=b, eps=eps, max_iter=30)),
+    ])
 
-    pipe = Pipeline(
-        [
-            ("preprocessor", preprocessor),
-            ("clusterer", clusterer)
-        ]
-    )
+    pipe = Pipeline([
+        ("preprocessor", preprocessor),
+        ("clusterer", clusterer)
+    ])
 
 
     # Fit the pipeline to the data
     pipe.fit(data)
 
     # Check if the algorithm result is False
-    if algorithm_type == "New Algorithm":
-        if pipe["clusterer"][algorithm_type].result == False:
-            return None
+    if pipe["clusterer"][algorithm_type].result == False:
+        return None
 
     # Transform the data using the preprocessor
     transformed_data = pipe["preprocessor"].transform(data)
@@ -101,42 +89,12 @@ def run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration):
     # Create a DataFrame with the transformed data
     pcadf = pd.DataFrame(transformed_data)
 
-    # Get the cluster labels and cluster centers from the fitted algorithm
-    algorithm_labels = pipe["clusterer"][algorithm_type].labels_
-    algorithm_cluster_centers = pipe["clusterer"][algorithm_type].cluster_centers_
+    # Get the cluster labels from the fitted algorithm
+    predicted_labels = pipe["clusterer"][algorithm_type].labels_
 
-    # Compute distances from each point to all cluster centers
-    distances_to_centers = cdist(transformed_data, algorithm_cluster_centers, 'euclidean')
-
-    # Initialize a list to store the predicted labels
-    predicted_labels = np.full(transformed_data.shape[0], -1)  # -1 will denote unclustered
-
-    # Compute the radius for each cluster
-    radii = []
-    for cluster_label, cluster_center in enumerate(algorithm_cluster_centers):
-        # Find points in the same cluster
-        cluster_points = transformed_data[algorithm_labels == cluster_label]
-        
-        # Calculate distances from the cluster center to all points in the cluster
-        distances = cdist([cluster_center], cluster_points, 'euclidean')[0]
-        
-        # Find the maximum distance (radius)
-        max_distance = np.max(distances)
-        radii.append(max_distance)
-
-    # Assign the cluster label to points within the radius
-    for i, point in enumerate(transformed_data):
-        # Find the distances from this point to all cluster centers
-        point_distances = distances_to_centers[i]
-        
-        # Find the nearest cluster center
-        nearest_cluster = np.argmin(point_distances)
-        
-        # Check if the point is within the radius of the nearest cluster center
-        if point_distances[nearest_cluster] <= radii[nearest_cluster]:
-            predicted_labels[i] = nearest_cluster
-
+    
     # Add the predicted labels to the DataFrame
+    pcadf = pd.DataFrame(transformed_data)
     pcadf['predicted_cluster'] = predicted_labels
 
     # Calculate and print the percentage of unclustered points
@@ -169,6 +127,6 @@ if __name__ == "__main__":
     ]
     )
 
-    run_michals_algorithm_and_graph(preprocessor, data, true_labels)
+    #run_michals_algorithm_and_graph(preprocessor, data, true_labels)
 
-    #find_parameters_general(preprocessor, data)
+    find_parameters_general(preprocessor, data)
