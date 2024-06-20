@@ -161,7 +161,8 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
          #Add algorithm legend that display parameters
         legend_labels = [f"$k$ = {pipe['clusterer'][algorithm_type].k}",
                             f"$b$ = {pipe['clusterer'][algorithm_type].b:.2f}",
-                            f"$\\epsilon$ = {pipe['clusterer'][algorithm_type].eps:.2f}"]
+                            f"$\\epsilon$ = {pipe['clusterer'][algorithm_type].eps:.2f}",
+                            f"$Unclustered$ = {unclustered_counter}"]
         handles, labels = scat.get_legend_handles_labels()
         handles.extend([plt.Line2D([0], [0], label=label) for label in legend_labels])
         labels.extend(legend_labels)

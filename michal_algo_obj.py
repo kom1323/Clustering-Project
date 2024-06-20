@@ -85,7 +85,6 @@ class MichalAlgorithm:
 
 
     def fit(self, X, y=None, sample_weight=None):
-        print(self._sample_size)
         result = False
         for _ in range(self._max_iter):  # iterations
             reps = []
@@ -98,31 +97,25 @@ class MichalAlgorithm:
                 found_any_new_representative = False
 
                 for p_sample in random_subset_list:
-                    
-                    is_sample_new_representative = True
-                    max_point_to_rep_distance = 0
-                    
+                    is_sample_new_representative = True                    
                     for rep in reps:
                         distance_point_to_rep = self.dist(p_sample, rep)
-                        # if distance_point_to_rep > max_point_to_rep_distance:
-                        #     max_point_to_rep_distance = distance_point_to_rep
-                    
                         if distance_point_to_rep <= self._b:
                             is_sample_new_representative = False
                             break
                     if is_sample_new_representative:
                         reps.append(p_sample)
-                        radii.append(self._b / 2)
+                        radii.append(self._b)
                         found_any_new_representative = True
                         break
                 if not found_any_new_representative:
                     break
             if len(reps) < self._k + 1:
-                print((self._k, self._b, self._eps), True)
+                print(f"(k = {self._k}, b = {self._b}, eps = {self._eps:.2f})", True)
                 result = True
                 break
         if not result:
-            print((self._k, self._b, self._eps), False)
+            print(f"(k = {self._k}, b = {self._b}, eps = {self._eps:.2f})", False)
             return
             
         self._result = result
