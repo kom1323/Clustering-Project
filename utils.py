@@ -77,26 +77,19 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
         
 
 
-    pcadf = pd.DataFrame(
-    pipe["preprocessor"].transform(data),
-    columns=["component_1", "component_2"],
-    )
+    # Transform the data using the preprocessor
+    transformed_data = pipe["preprocessor"].transform(data)
+    pcadf = pd.DataFrame(transformed_data, columns=["component_1", "component_2"])
+
 
     algorithm_labels = pipe["clusterer"][algorithm_type].labels_
     algorithm_cluster_centers = pipe["clusterer"][algorithm_type].cluster_centers_
 
-    
-    
-
-    print("algo labels = ", algorithm_labels)
-
-    for index in range(len(algorithm_labels)):
-            if algorithm_labels[index] is None:
-                algorithm_labels[index] = "Unclustered"
-                unclustered_counter += 1
-
+    unclustered_counter = np.sum(algorithm_labels == -1)
 
     pcadf["predicted_cluster"] = algorithm_labels
+    pcadf["predicted_cluster"] = pcadf["predicted_cluster"].replace({-1: "Unclustered"})
+
 
     if true_labels is not None:
         pcadf["true_label"] = true_labels
@@ -135,13 +128,7 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
 
     # Find a point in the same cluster as the cluster center and use its color for the circle
     for cluster_label, cluster_center in enumerate(algorithm_cluster_centers):
-        
-        # Find any point in the same cluster and take it's color
-        cluster_point_index = np.where(algorithm_labels == cluster_label)[0][0]
-        cluster_point_color = scat.get_children()[0].get_facecolors()[cluster_point_index]
-            
-        #Now we find the radius of the circle
-        #Find points in the same cluster
+        # Find points in the same cluster
         cluster_points = pcadf[pcadf['predicted_cluster'] == cluster_label][['component_1', 'component_2']].values
         
         # Calculate distances from cluster center to all points in the cluster
@@ -150,19 +137,24 @@ def display_clustering(pipe, data, true_labels, algorithm_type, iteration):
         # Find maximum distance
         max_distance = np.max(distances)
 
+        # Find a point in the same cluster and take its color
+        cluster_point_index = np.where(algorithm_labels == cluster_label)[0][0]
+        cluster_point_color = scat.get_children()[0].get_facecolors()[cluster_point_index]
+
         # Plot circle around the cluster center with the same color as the cluster point
         circle = plt.Circle(cluster_center, radius=max_distance, edgecolor=cluster_point_color, facecolor='None')
         plt.gca().add_patch(circle)
 
 
-
+    total_points = len(algorithm_labels)
+    percentage_unclustered = (unclustered_counter / total_points) * 100
    
     if algorithm_type == "New Algorithm":
          #Add algorithm legend that display parameters
         legend_labels = [f"$k$ = {pipe['clusterer'][algorithm_type].k}",
                             f"$b$ = {pipe['clusterer'][algorithm_type].b:.2f}",
                             f"$\\epsilon$ = {pipe['clusterer'][algorithm_type].eps:.2f}",
-                            f"$Unclustered$ = {unclustered_counter}"]
+                            f"$unclustered precentage$ = {percentage_unclustered}"]
         handles, labels = scat.get_legend_handles_labels()
         handles.extend([plt.Line2D([0], [0], label=label) for label in legend_labels])
         labels.extend(legend_labels)

@@ -127,6 +127,6 @@ if __name__ == "__main__":
     ]
     )
 
-    #run_michals_algorithm_and_graph(preprocessor, data, true_labels)
+    run_michals_algorithm_and_graph(preprocessor, data, true_labels)
 
-    find_parameters_general(preprocessor, data)
+    #find_parameters_general(preprocessor, data)

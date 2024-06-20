@@ -61,14 +61,11 @@ class MichalAlgorithm:
     def find_labels(self, points):
         labels = []
         for point in points:
-            labeled = False
-            for i, centroid in enumerate(self._reps):
-                distance = np.linalg.norm(np.array(point) - np.array(centroid))
-                if distance <= self._b:
-                    labels.append(i)
-                    labeled = True
-                    break
-            if not labeled:
+            distances = [self.dist(point, centroid) for centroid in self._reps]
+            closest_centroid = np.argmin(distances)
+            if distances[closest_centroid] <= self._b:
+                labels.append(closest_centroid)
+            else:
                 labels.append(-1)
 
         self._labels = np.array(labels)
