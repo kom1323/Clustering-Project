@@ -13,9 +13,9 @@ writer = SummaryWriter('logs')
 
 
 parameters = {
-    'eps': 100 / 1000,
+    'eps': 1 / 100,
     'k': 100,
-    'b': 0.05,
+    'b': 2,
     'num_iterations': 15
 }
 

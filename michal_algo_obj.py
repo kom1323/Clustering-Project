@@ -22,6 +22,7 @@ class MichalAlgorithm:
         self._eps = eps
         self._k = k
         self._sample_size = int(math.log(3 * self._k) / self._eps + 1)
+        print(self._sample_size)
         self._max_iter = max_iter
 
         self._result = False

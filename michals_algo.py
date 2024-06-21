@@ -56,8 +56,8 @@ def find_parameters_general(preprocessor, data):
 
     iteration = 1
     for k in range(parameters['k'], parameters['k'] + 500, 50):
-        for b in np.arange(parameters['b'], parameters['b'] + 0.4, 0.05):
-            for eps in np.arange(parameters['eps'], parameters['eps'] + 0.4, 0.05):
+        for b in np.arange(parameters['b'], parameters['b'] * 4, 0.3):
+            for eps in np.arange(parameters['eps'], parameters['eps'] + 0.1, 0.01):
                 iteration += 1
                 run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration)
 
@@ -117,6 +117,9 @@ def run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration):
     writer.close()
 
 
+
+def calculate_error_on_test(test_data, test_labels, centroids, radius_b):
+    pass
 
 
 

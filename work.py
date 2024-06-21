@@ -16,11 +16,11 @@ if __name__ == '__main__':
     preprocessor = Pipeline(
     [
         ("scaler", MinMaxScaler()),
-        ("pca", PCA(n_components=128, random_state=42)),
+        #("pca", PCA(n_components=128, random_state=42)),
     ]
     )
 
     n_clusters = 10
 
     #run_k_means_algorithm(preprocessor, sub_dataset, n_clusters)
-    #find_parameters_general(preprocessor, dataset)
+    find_parameters_general(preprocessor, dataset)
