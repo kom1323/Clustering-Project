@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import time
 
 class MichalAlgorithm:
     def __init__(self,eps, k, b, max_iter):
@@ -82,6 +83,8 @@ class MichalAlgorithm:
 
 
     def fit(self, X, y=None, sample_weight=None):
+        start_time = time.time()  # Record the start time
+
         result = False
         for _ in range(self._max_iter):  # iterations
             reps = []
@@ -113,6 +116,12 @@ class MichalAlgorithm:
             
         self._result = result
         self._reps = reps
+
+
+        end_time = time.time()  # Record the end time
+        elapsed_time = end_time - start_time  # Calculate elapsed time in seconds
+        minutes, seconds = divmod(elapsed_time, 60)  # Convert to minutes and seconds
+        print(f"Time taken for Michal's Algo (k={self._k}) in {int(minutes)} minutes and {seconds:.2f} seconds")
 
         self.find_labels(X)
         

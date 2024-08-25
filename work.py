@@ -8,11 +8,10 @@ from sklearn.preprocessing import MinMaxScaler
 if __name__ == '__main__':
     
     
-    dataset = fvecs_read(r"datasets/sift/sift_learn.fvecs")
-    sub_dataset = dataset[:200, :2]
-    draw_vectors(dataset)
-    
+    dataset = fvecs_read(r"datasets/sift/sift_base.fvecs")
 
+    #draw_vectors(dataset)
+    
     preprocessor = Pipeline(
     [
         ("scaler", MinMaxScaler()),
@@ -20,7 +19,10 @@ if __name__ == '__main__':
     ]
     )
 
-    n_clusters = 10
+    n_clusters = [50, 150, 250]
 
-    #run_k_means_algorithm(preprocessor, sub_dataset, n_clusters)
-    find_parameters_general(preprocessor, dataset)
+    #find_parameters_general(preprocessor, dataset)
+
+    for k in n_clusters:
+        print(f"{k} clusters...")
+        run_k_means_algorithm(preprocessor, dataset, k)
