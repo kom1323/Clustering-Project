@@ -11,7 +11,30 @@ import numpy as np
 import pandas as pd
 from k_means import run_k_means_algorithm
 from sklearn.metrics import silhouette_score
+from sentence_transformers import SentenceTransformer
+
+MODEL_NAME = 'all-MiniLM-L6-v2'
+model = SentenceTransformer(MODEL_NAME)
+
 from torch.utils.tensorboard import SummaryWriter
+
+
+def analyze_unrecognized_requests_michal(preprocessor, data_file):
+    df = load_data(data_file)
+    sentences = df['text'].tolist()
+    # processing the sentences - remove some charchters and convert to lower case
+    sentences = [sentence.strip('\r\n').lower() for sentence in sentences]
+    # encoding from sentences to vectors
+    embeddings = model.encode(sentences)
+    print(embeddings.shape)
+    print("----------------------------")
+    find_parameters_general(preprocessor, embeddings)
+
+
+def load_data(file_path):
+    df = pd.read_csv(file_path)
+    return df
+
 
 def run_michals_algorithm_and_graph(preprocessor, data, true_labels=None):
 
@@ -59,8 +82,8 @@ def find_parameters_general(preprocessor, data):
     iteration = 1
     #for k in range(parameters['k'], parameters['k'] + 300, 50):
     for k in [100]:
-        for b in [2.5, 3.5]:
-            for eps in [0.03, 0.09]:
+        for b in [18, 20, 22]:
+            for eps in [0.01,0.03, 0.09]:
                 iteration += 1
                 run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration)
 
@@ -129,7 +152,6 @@ def run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration):
     print(f"Iteration #{iteration} Percentage of unclustered points: {percentage_unclustered:.2f}%")
     writer.add_scalar('Percentage of Unclustered Points (%)', percentage_unclustered, iteration)
     writer.add_scalar('Silhouette Score', silhouette_avg, iteration)
-    writer.add_text('Time Taken', f"{int(minutes)} minutes and {seconds:.2f} seconds", iteration)
     writer.close()
 
 
@@ -142,31 +164,31 @@ def calculate_error_on_test(test_data, test_labels, centroids, radius_b):
 
 if __name__ == "__main__":
 
-    n_clusters = 5
+    # n_clusters = 5
 
-    data, true_labels = make_blobs(
-        n_samples=200,
-        centers=n_clusters,
-        cluster_std=1.5,
-        random_state=42
-    )
+    # data, true_labels = make_blobs(
+    #     n_samples=200,
+    #     centers=n_clusters,
+    #     cluster_std=1.5,
+    #     random_state=42
+    # )
 
-    # Step 1: Generate 1/10 of the original points as a uniform distribution
-    n_uniform = data.shape[0] // 20  # 1/10 of the original points
+    # # Step 1: Generate 1/10 of the original points as a uniform distribution
+    # n_uniform = data.shape[0] // 20  # 1/10 of the original points
 
-    # Determine the range for the uniform distribution
-    data_min = np.min(data, axis=0)
-    data_max = np.max(data, axis=0)
+    # # Determine the range for the uniform distribution
+    # data_min = np.min(data, axis=0)
+    # data_max = np.max(data, axis=0)
 
-    # Generate uniform points
-    uniform_data = np.random.uniform(low=data_min, high=data_max, size=(n_uniform, data.shape[1]))
+    # # Generate uniform points
+    # uniform_data = np.random.uniform(low=data_min, high=data_max, size=(n_uniform, data.shape[1]))
 
-    # Step 2: Concatenate the uniform points with the original data
-    new_data = np.vstack([data, uniform_data])
+    # # Step 2: Concatenate the uniform points with the original data
+    # new_data = np.vstack([data, uniform_data])
 
-    # No labels for uniform points, so we can create dummy labels if needed
-    # Concatenate the existing labels with dummy labels
-    new_labels = np.concatenate([true_labels, [-1] * n_uniform])
+    # # No labels for uniform points, so we can create dummy labels if needed
+    # # Concatenate the existing labels with dummy labels
+    # new_labels = np.concatenate([true_labels, [-1] * n_uniform])
 
 
     
@@ -178,6 +200,8 @@ if __name__ == "__main__":
     ]
     )
 
-    run_michals_algorithm_and_graph(preprocessor, new_data, new_labels)
-    run_k_means_algorithm(preprocessor, new_data, n_clusters, new_labels)
+    file_path = r"My-code\datasets\requests\banking-unrecognized-requests.csv"
+    analyze_unrecognized_requests_michal(preprocessor, file_path)
+    # run_michals_algorithm_and_graph(preprocessor, new_data, new_labels)
+    # run_k_means_algorithm(preprocessor, new_data, n_clusters, new_labels)
     #find_parameters_general(preprocessor, new_data)

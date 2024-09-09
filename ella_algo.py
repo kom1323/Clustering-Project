@@ -1,6 +1,6 @@
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics import silhouette_score
-from utils import fvecs_read
+from utils import *
 import numpy as np
 import time
 from tqdm import tqdm
@@ -74,6 +74,10 @@ def dynamic_means_clustering_cosine(embeddings, similarity_threshold, min_size, 
 
     valid_cluster_assignment = np.array([cluster_assignment[i] if i in valid_cluster_indices else -1 for i in range(len(cluster_assignment))])
 
+    # Print out the results
+    end_time = time.time()  # End time count
+    elapsed_time_minutes = (end_time - start_time) / 60  # Convert time to minutes
+
     # Calculate silhouette score for valid clusters
     silhouette_start_time = time.time()  # Start time count for silhouette score
     if len(valid_clusters) > 1:  # Silhouette score requires at least 2 clusters
@@ -86,9 +90,7 @@ def dynamic_means_clustering_cosine(embeddings, similarity_threshold, min_size, 
     num_clusters = len(valid_clusters)
     percentage_unclustered = len(unclustered_points) / len(embeddings) * 100
 
-    # Print out the results
-    end_time = time.time()  # End time count
-    elapsed_time_minutes = (end_time - start_time) / 60  # Convert time to minutes
+    
     silhouette_elapsed_time_seconds = silhouette_end_time - silhouette_start_time  # Time for silhouette in seconds
 
     print(f"Clustering completed in {elapsed_time_minutes:.2f} minutes.")
@@ -108,14 +110,14 @@ def dynamic_means_clustering_cosine(embeddings, similarity_threshold, min_size, 
 
 
 if __name__ == '__main__':
-    dataset = fvecs_read(r"datasets/sift/sift_learn.fvecs")
+    dataset = fvecs_read(r"datasets/sift/sift_base.fvecs")
     
     # Apply Min-Max Scaling
     scaler = MinMaxScaler()
     dataset_scaled = scaler.fit_transform(dataset)
 
-    iteration_values = [10, 30, 50]
-    similarity_threshold_values = [0.7, 0.8, 0.9]
+    iteration_values = [3]
+    similarity_threshold_values = [0.75]
 
     # Define the percentage for min_size
     min_size_percentage = 0.001  # For example, 1% of the dataset size

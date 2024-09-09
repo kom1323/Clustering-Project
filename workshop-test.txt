@@ -1,0 +1,62 @@
+Testing max_iterations=30, similarity_threshold=0.7, min_size=100
+Clustering Iterations: 100%|█████████████████████████████████████████████████████████████████████████████████████████| 30/30 [36:26<00:00, 72.88s/it] 
+Clustering completed in 37.38 minutes.
+Number of clusters: 526
+Silhouette Score: 0.0202
+Silhouette Score Calculation Time: 138.57 seconds
+Percentage of unclustered points: 8.85%
+-----------------------------------------
+
+Testing max_iterations=30, similarity_threshold=0.8, min_size=100
+Clustering Iterations: 100%|██████████████████████████████████████████████████████████████████████████████████████| 30/30 [5:13:05<00:00, 626.20s/it] 
+Clustering completed in 313.19 minutes.
+Number of clusters: 36
+Silhouette Score: 0.0824
+Silhouette Score Calculation Time: 0.38 seconds
+Percentage of unclustered points: 95.05%
+-----------------------------------------
+
+
+
+
+
+
+
+
+
+
+THIS IS THE BASE!!!
+
+
+Testing max_iterations=3, similarity_threshold=0.65, min_size=1000
+Clustering Iterations: 100%|██████████████████████████████████████████████████████████████████████████████████████████| 3/3 [32:11<00:00, 643.83s/it]
+Clustering completed in 499.95 minutes.
+Number of clusters: 345
+Silhouette Score: 0.0263
+Silhouette Score Calculation Time: 19044.36 seconds
+Percentage of unclustered points: 6.33%
+-----------------------------------------
+
+
+Testing max_iterations=3, similarity_threshold=0.75, min_size=1000
+Clustering Iterations: 100%|███████████████████████████████████████████████████████████████████████████████████████| 3/3 [3:50:56<00:00, 4619.00s/it]
+Clustering completed in 376.70 minutes.
+Number of clusters: 78
+Silhouette Score: 0.0723
+Silhouette Score Calculation Time: 433.31 seconds
+Percentage of unclustered points: 85.76%
+-----------------------------------------
+
+
+
+
+AKNOWLEDGEMENTS
+We thank prof. michal parnas for the many discussions she had with dr. sarel cohen about this problem, that enabled this research.
+We also thank Shacar Levi and Mayan ... for 
+
+
+
+
+
+
+Radius-Based Clustering (RBC), Rabinovitch el al., EMNLP’22

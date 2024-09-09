@@ -19,7 +19,7 @@ if __name__ == '__main__':
     ]
     )
 
-    n_clusters = [50, 150, 250]
+    n_clusters = [250]
 
     #find_parameters_general(preprocessor, dataset)
 
