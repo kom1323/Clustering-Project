@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 from scipy.spatial import ConvexHull
 from sklearn.metrics import silhouette_score
 from sentence_transformers import SentenceTransformer
-import pickle
 import math
 
 MODEL_NAME = 'all-MiniLM-L6-v2'
@@ -302,16 +301,3 @@ def display_clustering(pipe, data, true_labels, n_clusters,algorithm_type, itera
     return unclustered_counter
 
 
-def analyze_unrecognized_requests_michal(data_file):
-    df = load_data(data_file)
-    sentences = df['text'].tolist()
-    # processing the sentences - remove some charchters and convert to lower case
-    sentences = [sentence.strip('\r\n').lower() for sentence in sentences]
-    # encoding from sentences to vectors
-    embeddings = model.encode(sentences)
-    find_accurate_parameters(embeddings)
-
-
-def load_data(file_path):
-    df = pd.read_csv(file_path)
-    return df
