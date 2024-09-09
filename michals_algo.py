@@ -12,7 +12,6 @@ import pandas as pd
 from k_means import run_k_means_algorithm
 from sklearn.metrics import silhouette_score
 from sentence_transformers import SentenceTransformer
-
 MODEL_NAME = 'all-MiniLM-L6-v2'
 model = SentenceTransformer(MODEL_NAME)
 
@@ -26,7 +25,6 @@ def analyze_unrecognized_requests_michal(preprocessor, data_file):
     sentences = [sentence.strip('\r\n').lower() for sentence in sentences]
     # encoding from sentences to vectors
     embeddings = model.encode(sentences)
-    print(embeddings.shape)
     print("----------------------------")
     find_parameters_general(preprocessor, embeddings)
 
@@ -84,8 +82,8 @@ def find_parameters_general(preprocessor, data):
 
     iteration = 1
     #for k in range(parameters['k'], parameters['k'] + 300, 50):
-    for k in [100]:
-        for b in [18, 20, 22]:
+    for k in [30, 50, 70, 100]:
+        for b in [3.75 ,4, 4.25, 4.5, 4.75]:
             for eps in [0.01,0.03, 0.09]:
                 iteration += 1
                 run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration)
@@ -134,7 +132,6 @@ def run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration):
 
     # Get the cluster labels from the fitted algorithm
     predicted_labels = pipe["clusterer"][algorithm_type].labels_
-
     
     # Add the predicted labels to the DataFrame
     pcadf = pd.DataFrame(transformed_data)
@@ -214,7 +211,7 @@ if __name__ == "__main__":
     ]
     )
 
-    file_path = r"My-code\datasets\requests\banking-unrecognized-requests.csv"
+    file_path = r"C:\Users\Omer\Desktop\workshop\ClusteringAlgorithm\My-code\datasets\requests\covid19-unrecognized-requests.csv"
     analyze_unrecognized_requests_michal(preprocessor, file_path)
     # run_michals_algorithm_and_graph(preprocessor, new_data, new_labels)
     # run_k_means_algorithm(preprocessor, new_data, n_clusters, new_labels)

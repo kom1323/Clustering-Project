@@ -5,6 +5,14 @@ import numpy as np
 import time
 from tqdm import tqdm
 from sklearn.preprocessing import MinMaxScaler
+from sentence_transformers import SentenceTransformer
+MODEL_NAME = 'all-MiniLM-L6-v2'
+model = SentenceTransformer(MODEL_NAME)
+
+
+def load_data(file_path):
+    df = pd.read_csv(file_path)
+    return df
 
 
 # Helper function to update centroids
@@ -110,17 +118,25 @@ def dynamic_means_clustering_cosine(embeddings, similarity_threshold, min_size, 
 
 
 if __name__ == '__main__':
-    dataset = fvecs_read(r"datasets/sift/sift_base.fvecs")
-    
+    #dataset = fvecs_read(r"datasets/sift/sift_base.fvecs")
+    data_file = r"C:\Users\Omer\Desktop\workshop\ClusteringAlgorithm\My-code\datasets\requests\banking-unrecognized-requests.csv"
+    df = load_data(data_file)
+    sentences = df['text'].tolist()
+    # processing the sentences - remove some charchters and convert to lower case
+    sentences = [sentence.strip('\r\n').lower() for sentence in sentences]
+    # encoding from sentences to vectors
+    embeddings = model.encode(sentences)
+    print("----------------------------")
+
     # Apply Min-Max Scaling
     scaler = MinMaxScaler()
-    dataset_scaled = scaler.fit_transform(dataset)
+    dataset_scaled = scaler.fit_transform(embeddings)
 
-    iteration_values = [3]
-    similarity_threshold_values = [0.75]
+    iteration_values = [1, 2, 3]
+    similarity_threshold_values = [0.75, 0.8 ,0.85, 0.9]
 
     # Define the percentage for min_size
-    min_size_percentage = 0.001  # For example, 1% of the dataset size
+    min_size_percentage = 0.01  # For example, 1% of the dataset size
     dataset_size = len(dataset_scaled)
     min_size = int(min_size_percentage * dataset_size)
 

@@ -286,6 +286,7 @@ def display_clustering(pipe, data, true_labels, n_clusters,algorithm_type, itera
     writer.add_scalar('Percentage of Unclustered Points (%)', percentage_unclustered, iteration)
         
     if silhouette_avg is not None:
+        print("Silhouette Score: ", silhouette_avg, iteration)
         writer.add_scalar('Silhouette Score', silhouette_avg, iteration)
     else:
         writer.add_text('Silhouette Score', 'Not Applicable (Insufficient number of clusters)', iteration)

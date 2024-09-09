@@ -5,6 +5,14 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
 from utils import display_clustering
 import numpy as np
+import pandas as pd
+from sentence_transformers import SentenceTransformer
+MODEL_NAME = 'all-MiniLM-L6-v2'
+model = SentenceTransformer(MODEL_NAME)
+
+def load_data(file_path):
+    df = pd.read_csv(file_path)
+    return df
 
 
 def run_k_means_algorithm(preprocessor, data, n_clusters,  true_labels=None):
@@ -43,31 +51,42 @@ def run_k_means_algorithm(preprocessor, data, n_clusters,  true_labels=None):
 
 if __name__ == "__main__":
 
-    n_clusters = 5
+    # n_clusters = 5
 
-    data, true_labels = make_blobs(
-        n_samples=200,
-        centers=n_clusters,
-        cluster_std=1,
-        random_state=42
-    )
+    # data, true_labels = make_blobs(
+    #     n_samples=200,
+    #     centers=n_clusters,
+    #     cluster_std=1,
+    #     random_state=42
+    # )
 
-    # Step 1: Generate 1/10 of the original points as a uniform distribution
-    n_uniform = data.shape[0] // 10  # 1/10 of the original points
+    # # Step 1: Generate 1/10 of the original points as a uniform distribution
+    # n_uniform = data.shape[0] // 10  # 1/10 of the original points
 
-    # Determine the range for the uniform distribution
-    data_min = np.min(data, axis=0)
-    data_max = np.max(data, axis=0)
+    # # Determine the range for the uniform distribution
+    # data_min = np.min(data, axis=0)
+    # data_max = np.max(data, axis=0)
 
-    # Generate uniform points
-    uniform_data = np.random.uniform(low=data_min, high=data_max, size=(n_uniform, data.shape[1]))
+    # # Generate uniform points
+    # uniform_data = np.random.uniform(low=data_min, high=data_max, size=(n_uniform, data.shape[1]))
 
-    # Step 2: Concatenate the uniform points with the original data
-    new_data = np.vstack([data, uniform_data])
+    # # Step 2: Concatenate the uniform points with the original data
+    # new_data = np.vstack([data, uniform_data])
 
-    # No labels for uniform points, so we can create dummy labels if needed
-    # Concatenate the existing labels with dummy labels
-    new_labels = np.concatenate([true_labels, [-1] * n_uniform])
+    # # No labels for uniform points, so we can create dummy labels if needed
+    # # Concatenate the existing labels with dummy labels
+    # new_labels = np.concatenate([true_labels, [-1] * n_uniform])
+
+
+    #dataset = fvecs_read(r"datasets/sift/sift_base.fvecs")
+    data_file = r"C:\Users\Omer\Desktop\workshop\ClusteringAlgorithm\My-code\datasets\requests\covid19-unrecognized-requests.csv"
+    df = load_data(data_file)
+    sentences = df['text'].tolist()
+    # processing the sentences - remove some charchters and convert to lower case
+    sentences = [sentence.strip('\r\n').lower() for sentence in sentences]
+    # encoding from sentences to vectors
+    new_data = model.encode(sentences)
+    n_clusters = 68
 
     preprocessor = Pipeline(
     [
@@ -76,7 +95,7 @@ if __name__ == "__main__":
     ]
     )
 
-    run_k_means_algorithm(preprocessor, new_data, n_clusters, new_labels)
+    run_k_means_algorithm(preprocessor, new_data, n_clusters)
 
 
 
