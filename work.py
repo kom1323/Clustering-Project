@@ -21,8 +21,8 @@ if __name__ == '__main__':
 
     n_clusters = [50, 150, 250]
 
-    #find_parameters_general(preprocessor, dataset)
+    find_parameters_general(preprocessor, dataset)
 
-    for k in n_clusters:
-        print(f"{k} clusters...")
-        run_k_means_algorithm(preprocessor, dataset, k)
+    #for k in n_clusters:
+    #    print(f"{k} clusters...")
+    #    run_k_means_algorithm(preprocessor, dataset, k)

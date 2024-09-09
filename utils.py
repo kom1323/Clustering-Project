@@ -28,7 +28,7 @@ parameters = {
     'eps': 1 / 100,
     'k': 50,
     'b': 1.3,
-    'num_iterations': 5
+    'num_iterations': 10
 }
 
 

@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import time
+from tqdm import tqdm
 
 class MichalAlgorithm:
     def __init__(self,eps, k, b, max_iter):
@@ -23,7 +24,7 @@ class MichalAlgorithm:
         self._eps = eps
         self._k = k
         self._sample_size = int(math.log(3 * self._k) / self._eps + 1)
-        print(self._sample_size)
+        print(f"Running (k = {k}, b = {b:.2f}, eps = {eps:.3f}, sample size = {self._sample_size})")
         self._max_iter = max_iter
 
         self._result = False
@@ -62,7 +63,7 @@ class MichalAlgorithm:
 
     def find_labels(self, points):
         labels = []
-        for point in points:
+        for point in tqdm(points, desc="Assigning labels"):
             distances = [self.dist(point, centroid) for centroid in self._reps]
             closest_centroid = np.argmin(distances)
             if distances[closest_centroid] <= self._b:
@@ -86,7 +87,8 @@ class MichalAlgorithm:
         start_time = time.time()  # Record the start time
 
         result = False
-        for _ in range(self._max_iter):  # iterations
+        iterations =  None
+        for iters in range(self._max_iter):  # iterations
             reps = []
             for _ in range(self._k + 1):
                 
@@ -110,6 +112,7 @@ class MichalAlgorithm:
                     break
             if len(reps) < self._k + 1:
                 result = True
+                iterations = iters
                 break
         if not result:
             return
@@ -121,9 +124,9 @@ class MichalAlgorithm:
         end_time = time.time()  # Record the end time
         elapsed_time = end_time - start_time  # Calculate elapsed time in seconds
         minutes, seconds = divmod(elapsed_time, 60)  # Convert to minutes and seconds
-        print(f"Time taken for Michal's Algo (k={self._k}) in {int(minutes)} minutes and {seconds:.2f} seconds")
-
+        print(f"Time taken for Michal's Algo (k={self._k}, b={self._b}, eps={self._eps}) for {iterations} iterations in {int(minutes)} minutes and {seconds:.2f} seconds")
         self.find_labels(X)
+        print("DONE labeling")
         
 
 

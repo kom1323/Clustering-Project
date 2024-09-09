@@ -56,11 +56,14 @@ def run_michals_algorithm_and_graph(preprocessor, data, true_labels=None):
 
 def find_parameters_general(preprocessor, data):
 
+    # First run to load all the values to cache
+    run_michals_algorithm_general(preprocessor, data, k=100, b=1, eps=0.03, iteration=-1)
+
     iteration = 1
     #for k in range(parameters['k'], parameters['k'] + 300, 50):
-    for k in [100]:
-        for b in [2.5, 3.5]:
-            for eps in [0.03, 0.09]:
+    for k in [100, 200]:
+        for b in [2.5, 3, 3.5]:
+            for eps in [0.005, 0.01, 0.015, 0.02, 0.025, 0.03 ]:
                 iteration += 1
                 run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration)
 
@@ -85,17 +88,18 @@ def run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration):
 
     
     
-    writer = SummaryWriter(f'logs/run_{iteration}_b-{b:.2f}')
+    writer = SummaryWriter(f'logs/run-{iteration}_k-{k}_b-{b:.2f}_eps-{eps:.2f}')
 
     # Check if the algorithm result is True
     if pipe["clusterer"][algorithm_type].result == True:
-        print(f"(k = {k}, b = {b:.2f}, eps = {eps:.2f})", True)
-        writer.add_text('Algorithm Result', f"(k = {k}, b = {b:.2f}, eps = {eps:.2f}) True, Clusters found = {len(set(pipe['clusterer'][algorithm_type].labels_))}", iteration)
+        print("Algorithm result: ", True)
+        writer.add_text('Algorithm Result', f"(k = {k}, b = {b:.2f}, eps = {eps:.3f}) True, Clusters found = {len(set(pipe['clusterer'][algorithm_type].labels_))}", iteration)
         # len(set(pipe['clusterer'][algorithm_type].labels_))
     else:
-        print(f"(k = {k}, b = {b:.2f}, eps = {eps:.2f})", False)
-        writer.add_text('Algorithm Result', f"(k = {k}, b = {b:.2f}, eps = {eps:.2f}) False", iteration)
+        print("Algorithm result: ", False)
+        writer.add_text('Algorithm Result', f"(k = {k}, b = {b:.2f}, eps = {eps:.3f}) False", iteration)
         writer.close()
+        print("-----------------------------")
         return
 
 
@@ -118,18 +122,27 @@ def run_michals_algorithm_general(preprocessor, data, k, b, eps, iteration):
     total_points = len(predicted_labels)
     percentage_unclustered = (num_unclustered / total_points) * 100
 
+    #filter out unclustered points for silhouette calculations
+    clustered_data = transformed_data[predicted_labels != -1]
+    clustered_labels = predicted_labels[predicted_labels != -1]
 
     # Calculate the silhouette score
+    print("Calculating silhoette score...")
+    start_time = time.time()
     if len(set(predicted_labels)) > 1:  # At least two clusters are required
-        silhouette_avg = silhouette_score(transformed_data, predicted_labels)
+        silhouette_avg = silhouette_score(clustered_data, clustered_labels)
     else:
         silhouette_avg = -2  # In case there is only one cluster
+    end_time = time.time()
+    elapsed_time_minutes = (end_time - start_time) / 60
+    print(f"DONE. Elapsed time: {elapsed_time_minutes:.2f} minutes")
+    print("Silhouette score = ", silhouette_avg)
 
    
-    print(f"Iteration #{iteration} Percentage of unclustered points: {percentage_unclustered:.2f}%")
+    print(f"Iteration #{iteration} Percentage of unclustered points: {percentage_unclustered:.2f}%, Clusters found: {len(set(pipe['clusterer'][algorithm_type].labels_))}")
+    print("-----------------------------")
     writer.add_scalar('Percentage of Unclustered Points (%)', percentage_unclustered, iteration)
     writer.add_scalar('Silhouette Score', silhouette_avg, iteration)
-    writer.add_text('Time Taken', f"{int(minutes)} minutes and {seconds:.2f} seconds", iteration)
     writer.close()
 
 
